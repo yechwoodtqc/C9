@@ -5,7 +5,7 @@
 ---
 
 # C9: Click on 9 keys
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/austinauyeung/C9) ![Android Version](https://img.shields.io/badge/Android-7.0%2B-brightgreen) ![GitHub all releases](https://img.shields.io/github/downloads/austinauyeung/C9/total) ![License](https://img.shields.io/github/license/austinauyeung/C9)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/austinauyeung/C9) ![Android Version](https://img.shields.io/badge/Android-6.0%2B-brightgreen) ![GitHub all releases](https://img.shields.io/github/downloads/austinauyeung/C9/total) ![License](https://img.shields.io/github/license/austinauyeung/C9)
 
 <div align="center">
 <img src='./docs/imgs/Screenshot_20250319_213956.png' width=200>
@@ -43,6 +43,18 @@ Install using adb:
 >> adb install path/to/apk
 >> adb shell settings put secure enabled_accessibility_services com.austinauyeung.nyuma.c9/com.austinauyeung.nyuma.c9.accessibility.AppAccessibilityService
 ```
+
+### Android 6.0 compatibility (experimental)
+
+This compatibility branch lowers the minimum SDK to API 23. Android 6.0 does not provide
+the standard `AccessibilityService.dispatchGesture()` API, so C9 uses its Shizuku-based
+input strategy on API 23. Gesture injection therefore requires a working, authorized
+Shizuku service and may still be blocked by device firmware or system policy. Without
+Shizuku, arbitrary-coordinate taps, dragging, and scrolling are not available on Android 6.
+Accessible UI actions and the overlay may still be limited by device-specific behavior.
+
+This branch has not yet been built or tested on an Android 6 device; treat compatibility
+as experimental until a successful build and on-device test are recorded.
 
 ### Additional installation for certain Android versions
 Refer to the following table to determine if you will need to [install Shizuku](https://shizuku.rikka.app/guide/setup/) to use this application:
