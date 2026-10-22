@@ -1,6 +1,7 @@
 package com.austinauyeung.nyuma.c9.core.control
 
 import android.accessibilityservice.AccessibilityService
+import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.ui.geometry.Offset
 import com.austinauyeung.nyuma.c9.C9
@@ -90,10 +91,18 @@ class CoreManager(
             modeCoordinator = ModeCoordinator()
             notificationManager = NotificationManager(service)
 
-            val defaultStrategy = DefaultGestureStrategy(service, settingsFlow)
             val shizukuStrategy = ShizukuGestureStrategy(
                 settingsFlow = settingsFlow
             )
+            // dispatchGesture and GestureDescription are available only on API 24+.
+            // On Android 6, avoid constructing the standard strategy and use the
+            // Shizuku injector when authorized; its methods safely report failure
+            // when Shizuku is unavailable instead of calling an unsupported API.
+            val defaultStrategy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                DefaultGestureStrategy(service, settingsFlow)
+            } else {
+                shizukuStrategy
+            }
             C9.getInstance().setShizukuGestureStrategy(shizukuStrategy)
 
             gestureManager = GestureManager(
