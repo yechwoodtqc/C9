@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.austinauyeung.nyuma.c9"
-        minSdk = 24
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "3.0.4"
