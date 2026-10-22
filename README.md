@@ -14,7 +14,7 @@
 
 C9 is a dual-cursor application that takes inspiration from T9 to provide gestures on Android feature phones and Android TV devices. Features of the application include:
 
-- 🌎 Universal Android 7.0+ support via Shizuku as needed
+- 🌎 Android 7.0+ standard support; experimental Android 6.0/API 23 branch using Shizuku
 - ⚡ Introduction of a grid cursor focused on efficiency
 - 🖱️ Standard cursor to provide a traditional proxy for touchscreen gestures
 - ⚙️ Remappable cursor activation keys and integration with button mappers
