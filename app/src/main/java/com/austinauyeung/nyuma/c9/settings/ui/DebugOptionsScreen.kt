@@ -31,12 +31,14 @@ import com.austinauyeung.nyuma.c9.core.util.VersionUtil
 @Composable
 fun DebugOptionsScreen(
     settingsState: SettingsState,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onExportLogcat: () -> Unit
 ) {
     val uiState by settingsState.uiState.collectAsState()
     var showShizukuDialog by remember { mutableStateOf(false) }
     var showPassthroughDialog by remember { mutableStateOf(false) }
     var showTouchscreenDialog by remember { mutableStateOf(false) }
+    var showLogcatWarning by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -59,6 +61,14 @@ fun DebugOptionsScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
+            PreferenceCategory(title = "Diagnostics") {
+                SimplePreferenceItem(
+                    title = "Export Logcat to File",
+                    subtitle = "Save device logs as a text file for troubleshooting",
+                    onClick = { showLogcatWarning = true }
+                )
+            }
+
 //            PreferenceCategory(title = "Logging") {
 //                SwitchPreferenceItem(
 //                    title = "Collect Logs",
@@ -102,6 +112,31 @@ fun DebugOptionsScreen(
                         }
                     },
                     enabled = VersionUtil.belowVersion(Build.VERSION_CODES.O)
+                )
+            }
+
+            if (showLogcatWarning) {
+                AlertDialog(
+                    onDismissRequest = { showLogcatWarning = false },
+                    title = { Text("Export Logcat") },
+                    text = {
+                        Text("C9 will save the logcat output to a text file you choose. Logs can contain private information such as app activity or identifiers. Review the file before sending it. Android may limit access to system-wide logs.")
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showLogcatWarning = false
+                                onExportLogcat()
+                            }
+                        ) {
+                            Text("Choose File")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showLogcatWarning = false }) {
+                            Text("Cancel")
+                        }
+                    }
                 )
             }
 
