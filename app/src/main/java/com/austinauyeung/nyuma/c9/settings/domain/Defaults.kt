@@ -46,7 +46,6 @@ object Defaults {
         const val ZOOM_DURATION = GestureConstants.DEFAULT_ZOOM_DURATION
         const val ZOOM_FACTOR = GestureConstants.DEFAULT_ZOOM_DISTANCE_FACTOR
         const val ALLOW_PASSTHROUGH = GestureConstants.ALLOW_PASSTHROUGH
-        const val OVERRIDE_ANDROID_7 = false
         const val HIDE_ON_KEYBOARD_OPEN = false
         const val HIDE_ON_LAUNCHER_OPEN = false
         const val HIDE_ON_LOCK_SCREEN = false
