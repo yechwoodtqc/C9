@@ -448,7 +448,6 @@ class CursorActionHandler(
 
     private suspend fun handleScrollKey(event: KeyEvent, keyCode: Int): Boolean {
         val settings = settingsFlow.value
-        if (settings.overrideAndroid7) return false
 
         when (event.action) {
             KeyEvent.ACTION_DOWN -> {
@@ -487,7 +486,6 @@ class CursorActionHandler(
 
     private suspend fun handleZoomKey(event: KeyEvent): Boolean {
         val settings = settingsFlow.value
-        if (settings.overrideAndroid7) return false
 
         when (event.action) {
             KeyEvent.ACTION_DOWN -> {
