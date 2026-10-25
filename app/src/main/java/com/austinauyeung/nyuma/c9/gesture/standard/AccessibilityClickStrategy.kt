@@ -2,7 +2,6 @@ package com.austinauyeung.nyuma.c9.gesture.standard
 
 import android.accessibilityservice.AccessibilityService
 import android.graphics.Rect
-import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 import com.austinauyeung.nyuma.c9.core.domain.ScrollDirection
 import com.austinauyeung.nyuma.c9.core.logs.Logger
@@ -100,6 +99,7 @@ class AccessibilityClickStrategy(
     ): Boolean {
         pendingTapX = x
         pendingTapY = y
+        completionListener?.onGestureCompleted(true)
         return true
     }
 
