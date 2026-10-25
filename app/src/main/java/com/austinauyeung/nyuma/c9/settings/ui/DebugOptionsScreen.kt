@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.austinauyeung.nyuma.c9.core.util.VersionUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +34,6 @@ fun DebugOptionsScreen(
     onExportLogcat: () -> Unit
 ) {
     val uiState by settingsState.uiState.collectAsState()
-    var showShizukuDialog by remember { mutableStateOf(false) }
     var showPassthroughDialog by remember { mutableStateOf(false) }
     var showTouchscreenDialog by remember { mutableStateOf(false) }
     var showLogcatWarning by remember { mutableStateOf(false) }
@@ -87,34 +85,6 @@ fun DebugOptionsScreen(
 //                )
 //            }
 
-            PreferenceCategory(title = "Shizuku") {
-                SwitchPreferenceItem(
-                    title = "Enable Shizuku Integration",
-                    subtitle = "Required for certain Android devices",
-                    checked = uiState.enableShizukuIntegration,
-                    onCheckedChange = { newValue ->
-                        if (newValue && !uiState.enableShizukuIntegration) {
-                            showShizukuDialog = true
-                        } else {
-                            settingsState.updateEnableShizukuIntegration(newValue)
-                        }
-                    },
-                    enabled = !VersionUtil.belowVersion(Build.VERSION_CODES.O)
-                )
-
-                SwitchPreferenceItem(
-                    title = "Android 7 Override",
-                    subtitle = "Removes Shizuku requirement but restricts gestures to clicks only",
-                    checked = uiState.overrideAndroid7,
-                    onCheckedChange = { value ->
-                        settingsState.updatePreference(value) { settings, v ->
-                            settings.copy(overrideAndroid7 = v, enableShizukuIntegration = !v)
-                        }
-                    },
-                    enabled = VersionUtil.belowVersion(Build.VERSION_CODES.O)
-                )
-            }
-
             if (showLogcatWarning) {
                 AlertDialog(
                     onDismissRequest = { showLogcatWarning = false },
@@ -140,33 +110,6 @@ fun DebugOptionsScreen(
                 )
             }
 
-            if (showShizukuDialog) {
-                AlertDialog(
-                    onDismissRequest = { showShizukuDialog = false },
-                    title = { Text("Enable Shizuku Integration") },
-                    text = {
-                        Text("Only enable this if gestures do not work. Shizuku will be used to dispatch gestures. After enabling this setting, use the banner on the main page to verify Shizuku authorization.")
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                settingsState.updateEnableShizukuIntegration(true)
-                                showShizukuDialog = false
-                            }
-                        ) {
-                            Text("Enable")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showShizukuDialog = false }
-                        ) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
-
             PreferenceCategory(title = "Gestures") {
                 SwitchPreferenceItem(
                     title = "Overlapping Gestures",
@@ -179,7 +122,7 @@ fun DebugOptionsScreen(
                     },
                 )
                 SwitchPreferenceItem(
-                    title = "Improve Non-Shizuku Gestures",
+                    title = "Smooth Gestures",
                     subtitle = "Currently recommended only for Android versions 8-10 as needed",
                     checked = uiState.forceSmootherGestures,
                     onCheckedChange = { value ->
