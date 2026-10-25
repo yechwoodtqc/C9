@@ -81,7 +81,6 @@ class SettingsState(
                             zoomDuration = settings.zoomDuration,
                             zoomFactor = settings.zoomFactor,
                             allowPassthrough = settings.allowPassthrough,
-                            enableShizukuIntegration = settings.enableShizukuIntegration,
                             overrideAndroid7 = settings.overrideAndroid7,
                             hideOnKeyboardOpen = settings.hideOnKeyboardOpen,
                             hideOnLauncherOpen = settings.hideOnLauncherOpen,
@@ -185,7 +184,6 @@ class SettingsState(
             zoomDuration = _uiState.value.zoomDuration,
             zoomFactor = _uiState.value.zoomFactor,
             allowPassthrough = _uiState.value.allowPassthrough,
-            enableShizukuIntegration = _uiState.value.enableShizukuIntegration,
             overrideAndroid7 = _uiState.value.overrideAndroid7,
             hideOnKeyboardOpen = _uiState.value.hideOnKeyboardOpen,
             hideOnLauncherOpen = _uiState.value.hideOnLauncherOpen,
@@ -285,8 +283,6 @@ class SettingsState(
         updateSettings { it.copy(disableTouchscreen = disable) }
     }
 
-    fun updateEnableShizukuIntegration(integrate: Boolean) {
-        updateSettings { it.copy(enableShizukuIntegration = integrate) }
     }
 
     class Factory(
