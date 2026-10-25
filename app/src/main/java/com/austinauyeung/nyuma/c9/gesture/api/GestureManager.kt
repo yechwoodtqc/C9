@@ -206,7 +206,7 @@ class GestureManager(
                 endX2, startY,
                 forceFixedGesture,
                 completionListener
-            ) else currentStrategy.performZoom(
+            ) else strategy.performZoom(
                 isZoomIn,
                 startX, startY1,
                 startX, startY2,
@@ -232,7 +232,7 @@ class GestureManager(
             Logger.d("Starting tap gesture at ($x, $y)")
             setGestureReady(false)
 
-            return currentStrategy.startTap(x, y, completionListener)
+            return strategy.startTap(x, y, completionListener)
         } catch (e: Exception) {
             Logger.e("Error starting tap gesture", e)
             cancelTap()
@@ -260,7 +260,7 @@ class GestureManager(
 
         try {
             Logger.d("Dragging from ($fromX, $fromY) to ($toX, $toY)")
-            return currentStrategy.dragTap(fromX, fromY, toX, toY, completionListener)
+            return strategy.dragTap(fromX, fromY, toX, toY, completionListener)
         } catch (e: Exception) {
             Logger.e("Error during drag tap", e)
             cancelTap()
@@ -278,7 +278,7 @@ class GestureManager(
 
         try {
             Logger.d("Ending tap at ($x, $y)")
-            return currentStrategy.endTap(x, y, completionListener)
+            return strategy.endTap(x, y, completionListener)
         } catch (e: Exception) {
             Logger.e("Error ending tap gesture", e)
             cancelTap()
@@ -289,7 +289,7 @@ class GestureManager(
     private fun cancelTap(): Boolean {
         try {
             Logger.d("Cancelling tap gesture")
-            return currentStrategy.cancelTap(completionListener)
+            return strategy.cancelTap(completionListener)
         } catch (e: Exception) {
             Logger.e("Error cancelling tap gesture", e)
             return false
