@@ -47,28 +47,14 @@ Install using adb:
 ### Android 6.0 compatibility (experimental)
 
 This compatibility branch lowers the minimum SDK to API 23. Android 6.0 does not provide
-the standard `AccessibilityService.dispatchGesture()` API, so C9 uses its Shizuku-based
-input strategy on API 23. Gesture injection therefore requires a working, authorized
-Shizuku service and may still be blocked by device firmware or system policy. Without
-Shizuku, arbitrary-coordinate taps, dragging, and scrolling are not available on Android 6.
-Accessible UI actions and the overlay may still be limited by device-specific behavior.
+the public `AccessibilityService.dispatchGesture()` API, so this branch uses accessibility
+node actions for clicks on accessible controls and scroll actions on accessible containers.
+It cannot inject arbitrary touchscreen events. Clicks on games, custom-drawn surfaces, or
+controls without accessibility nodes may not work; dragging, pinch-zoom, and free-form swipes
+are unsupported on API 23.
 
-This branch has not yet been built or tested on an Android 6 device; treat compatibility
-as experimental until a successful build and on-device test are recorded.
-
-### Additional installation for certain Android versions
-Refer to the following table to determine if you will need to [install Shizuku](https://shizuku.rikka.app/guide/setup/) to use this application:
-
-| Android Version | Shizuku Required | Notes                                                                                                                                                                                                                                                       |
-|-----------------| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 7               | Maybe | Shizuku is needed specifically to support features such as long press and drag. This requirement can be overridden, but gestures will be restricted to just clicks.                                                                                         |
-| 8-10            | Maybe | If you are experiencing poor ("blocky") scroll and zoom performance, first try `C9 > Developer Options > Improve Non-Shizuku Gestures`, which will attempt to dispatch smoother gestures but may stutter. For the most optimal gestures, Shizuku is needed. |
-| 11-12           | Maybe | Shizuku is needed if the application does not work as-is (i.e. no gestures can be dispatched) and/or you have had trouble in the past with other cursor apps. This may happen on Android 11 phones and Android 12 for TV.                                   |
-| 13+             | No |                                                                                                                                                                                                                                                             |
-
-Once installed, navigate to, and enable, `C9 > Developer Options > Enable Shizuku Integration`.
-
-Unless your device is rooted, you will need to manually restart the Shizuku service upon reboot. Alternatively, you can install Shizuku forks, such as [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku) or [thejaustin/ShiuzkuPlus](https://github.com/thejaustin/ShizukuPlus), which automatically start the service on boot.
+This branch has not yet been verified on the physical LG Exalt. Treat compatibility as
+experimental until a successful build and on-device test are recorded.
 
 ## Acknowledgments
 As the [package name](#option-2) would suggest, this application is dedicated to my late cat, [Nyuma](./docs/imgs/IMG_3226.jpg).
@@ -76,7 +62,7 @@ As the [package name](#option-2) would suggest, this application is dedicated to
 - Allegra and [Arlie](./docs/imgs/IMG_5199.jpg) for their support
 - Everyone on the [releases](https://github.com/austinauyeung/C9/releases) page for their feature suggestions and bug reports
 - `sam-club` for extensive testing
-- `Dev-in-the-BM` for testing and the Shizuku suggestion
+- `Dev-in-the-BM` for testing
 - `anonymousfliphones` for testing
 
 ## Overview
@@ -119,23 +105,12 @@ The grid cursor trades precision for efficiency, taking advantage of the fact th
 A standard cursor is included for actions requiring more precision and for those who strictly prefer a traditional pointer. The demo above shows auto-hiding in text fields as well as long press and drag.
 
 ## Troubleshooting
-### Verifying Shizuku authorization
-A green banner on the main page indicates that Shizuku authorization has been granted to C9. Only the third screenshot below indicates successful authorization.
-<div align="center">
-<img src='./docs/imgs/Screenshot_20250328_194724.png' width=200>
-<img src='./docs/imgs/Screenshot_20250328_194745.png' width=200>
-<img src='./docs/imgs/Screenshot_20250328_194815.png' width=200>
-</div>
-
 ### Cursor does not deactivate
 If you are unable to deactivate the cursor, clear the internal activation key, which unmaps that cursor and hides any active cursor, even if it was activated using a button mapper.
 
 ## FAQs
 ### Where can I make feature suggestions or report bugs?
 You can use the [issues](https://github.com/austinauyeung/C9/issues) tab for both.
-
-### What is Shizuku?
-Shizuku allows applications in general to perform actions that require elevated privileges. In C9, it is required to dispatch gestures on Android 7 and 11 using [InputManager](https://developer.android.com/reference/android/hardware/input/InputManager) instead of the standard dispatch using [AccessibilityService](https://developer.android.com/reference/android/accessibilityservice/AccessibilityService).
 
 ## License
 [Apache License Version 2.0](./LICENSE)
