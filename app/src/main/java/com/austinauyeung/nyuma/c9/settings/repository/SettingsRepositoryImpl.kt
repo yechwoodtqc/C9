@@ -52,7 +52,6 @@ class SettingsRepositoryImpl(
         private val ZOOM_DURATION = longPreferencesKey("zoom_duration")
         private val ZOOM_FACTOR = floatPreferencesKey("zoom_factor")
         private val ALLOW_PASSTHROUGH = booleanPreferencesKey("allow_passthrough")
-        private val OVERRIDE_ANDROID_7 = booleanPreferencesKey("override_android_7")
         private val HIDE_ON_KEYBOARD_OPEN = booleanPreferencesKey("hide_on_keyboard_open")
         private val HIDE_ON_LAUNCHER_OPEN = booleanPreferencesKey("hide_on_launcher_open")
         private val HIDE_ON_LOCK_SCREEN = booleanPreferencesKey("hide_on_lock_screen")
@@ -246,8 +245,6 @@ class SettingsRepositoryImpl(
                         ?: OverlaySettings.DEFAULT.zoomFactor,
                     allowPassthrough = preferences[ALLOW_PASSTHROUGH]
                         ?: OverlaySettings.DEFAULT.allowPassthrough,
-                    overrideAndroid7 = preferences[OVERRIDE_ANDROID_7]
-                        ?: OverlaySettings.DEFAULT.overrideAndroid7,
                     hideOnKeyboardOpen = preferences[HIDE_ON_KEYBOARD_OPEN]
                         ?: OverlaySettings.DEFAULT.hideOnKeyboardOpen,
                     hideOnLauncherOpen = preferences[HIDE_ON_LAUNCHER_OPEN]
@@ -357,7 +354,6 @@ class SettingsRepositoryImpl(
                 preferences[ZOOM_DURATION] = settings.zoomDuration
                 preferences[ZOOM_FACTOR] = settings.zoomFactor
                 preferences[ALLOW_PASSTHROUGH] = settings.allowPassthrough
-                preferences[OVERRIDE_ANDROID_7] = settings.overrideAndroid7
                 preferences[HIDE_ON_KEYBOARD_OPEN] = settings.hideOnKeyboardOpen
                 preferences[HIDE_ON_LAUNCHER_OPEN] = settings.hideOnLauncherOpen
                 preferences[HIDE_ON_LOCK_SCREEN] = settings.hideOnLockScreen
