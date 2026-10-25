@@ -1,14 +1,11 @@
 package com.austinauyeung.nyuma.c9.gesture.api
 
-import android.os.Build
 import androidx.compose.ui.geometry.Offset
 import com.austinauyeung.nyuma.c9.core.constants.GestureConstants
 import com.austinauyeung.nyuma.c9.core.domain.ScreenDimensions
 import com.austinauyeung.nyuma.c9.core.domain.ScrollDirection
 import com.austinauyeung.nyuma.c9.core.logs.Logger
-import com.austinauyeung.nyuma.c9.core.shizuku.ShizukuConnection
 import com.austinauyeung.nyuma.c9.core.util.OrientationUtil
-import com.austinauyeung.nyuma.c9.core.util.VersionUtil
 import com.austinauyeung.nyuma.c9.gesture.ui.GesturePath
 import com.austinauyeung.nyuma.c9.gesture.ui.GestureType
 import com.austinauyeung.nyuma.c9.gesture.ui.animateGesturePath
@@ -29,8 +26,7 @@ import kotlin.math.pow
  * Translates inputs from either cursor mode into gestures, using Shizuku if necessary.
  */
 class GestureManager(
-    private val defaultStrategy: GestureStrategy,
-    private val shizukuStrategy: GestureStrategy,
+    private val strategy: GestureStrategy,
     private val settingsFlow: StateFlow<OverlaySettings>,
     private val dimensionsFlow: StateFlow<ScreenDimensions>,
     private val serviceScope: CoroutineScope
@@ -38,8 +34,6 @@ class GestureManager(
     private val _gesturePaths = MutableStateFlow<List<GesturePath>>(emptyList())
     val gesturePaths: StateFlow<List<GesturePath>> = _gesturePaths.asStateFlow()
 
-    private var currentStrategy: GestureStrategy = defaultStrategy
-    private var shizukuObserverJob: Job? = null
 
     private val _isReady = MutableStateFlow(true)
     val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
@@ -57,46 +51,10 @@ class GestureManager(
     }
 
     init {
-        evaluateStrategy()
-
-        shizukuObserverJob = ShizukuConnection.observeStatus { status ->
-            Logger.d("Shizuku status changed to: $status, re-evaluating gesture strategy")
-            serviceScope.launch {
-                delay(1000)
-                evaluateStrategy()
-            }
-        }
-
-        serviceScope.launch {
-            settingsFlow.collect {
-                Logger.d("Settings changed, re-evaluating gesture strategy")
-                evaluateStrategy()
-            }
-        }
-    }
-
-    private fun evaluateStrategy() {
-        currentStrategy = if (shouldUseShizuku()) {
-            Logger.d("Using Shizuku gesture strategy")
-            shizukuStrategy
-        } else {
-            Logger.d("Using standard gesture strategy")
-            defaultStrategy
-        }
+        // The selected strategy is fixed by the platform API level in CoreManager.
     }
 
     private var shouldShowGestures = false
-
-    private fun shouldUseShizuku(): Boolean {
-        val settings = settingsFlow.value
-        if (!settings.enableShizukuIntegration) {
-            return false
-        }
-
-        val isShizukuReady = ShizukuConnection.isReady(forceRefresh = true)
-        Logger.d("Shizuku ready status: $isShizukuReady")
-        return isShizukuReady
-    }
 
     private val completionListener = object : GestureCompletionListener {
         override fun onGestureCompleted(success: Boolean) {
@@ -162,7 +120,7 @@ class GestureManager(
                 visualizeScroll(direction, startX, startY, endX, endY, duration)
             }
 
-            val result = currentStrategy.performScroll(startX, startY, endX, endY, forceFixedGesture, duration, completionListener)
+            val result = strategy.performScroll(startX, startY, endX, endY, forceFixedGesture, duration, completionListener)
 
             return result
         } catch (e: Exception) {
@@ -270,19 +228,6 @@ class GestureManager(
                 visualizeTap(x, y)
             }
 
-            // Android 6 has no AccessibilityService.dispatchGesture API. A tap cannot
-            // be performed without a ready Shizuku input injector; do not report a no-op
-            // as a successful click.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N && !shouldUseShizuku()) {
-                Logger.e("Cannot tap on Android 6: Shizuku integration is disabled or not authorized")
-                setGestureReady(true)
-                return false
-            }
-
-            if (VersionUtil.belowVersion(Build.VERSION_CODES.O) && !shouldUseShizuku()) {
-                return defaultStrategy.immediateTap(x, y)
-            }
-
             if (!getGestureReady()) return false
             Logger.d("Starting tap gesture at ($x, $y)")
             setGestureReady(false)
@@ -301,10 +246,6 @@ class GestureManager(
     }
 
     suspend fun dragTap(fromX: Float, fromY: Float, toX: Float, toY: Float): Boolean {
-        if (VersionUtil.belowVersion(Build.VERSION_CODES.O) && !shouldUseShizuku()) {
-            return true
-        }
-
         if (shouldShowGestures) {
             // Need to fix visualization lag; remove drag visualization for now
             endVisualizeTap()
@@ -332,10 +273,6 @@ class GestureManager(
             endVisualizeTap()
         }
 
-        if (VersionUtil.belowVersion(Build.VERSION_CODES.O) && !shouldUseShizuku()) {
-            return true
-        }
-
         if (!getGestureReady()) return false
         setGestureReady(false)
 
@@ -350,10 +287,6 @@ class GestureManager(
     }
 
     private fun cancelTap(): Boolean {
-        if (VersionUtil.belowVersion(Build.VERSION_CODES.O) && !shouldUseShizuku()) {
-            return true
-        }
-
         try {
             Logger.d("Cancelling tap gesture")
             return currentStrategy.cancelTap(completionListener)
@@ -440,7 +373,5 @@ class GestureManager(
     }
 
     fun cleanup() {
-        shizukuObserverJob?.cancel()
-        shizukuObserverJob = null
     }
 }
