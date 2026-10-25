@@ -270,6 +270,15 @@ class GestureManager(
                 visualizeTap(x, y)
             }
 
+            // Android 6 has no AccessibilityService.dispatchGesture API. A tap cannot
+            // be performed without a ready Shizuku input injector; do not report a no-op
+            // as a successful click.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N && !shouldUseShizuku()) {
+                Logger.e("Cannot tap on Android 6: Shizuku integration is disabled or not authorized")
+                setGestureReady(true)
+                return false
+            }
+
             if (VersionUtil.belowVersion(Build.VERSION_CODES.O) && !shouldUseShizuku()) {
                 return defaultStrategy.immediateTap(x, y)
             }
