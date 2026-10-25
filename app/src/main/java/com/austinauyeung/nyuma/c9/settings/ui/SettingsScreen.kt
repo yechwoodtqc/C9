@@ -75,8 +75,6 @@ import androidx.core.graphics.toColorInt
 import com.austinauyeung.nyuma.c9.BuildConfig
 import com.austinauyeung.nyuma.c9.R
 import com.austinauyeung.nyuma.c9.core.constants.ApplicationConstants
-import com.austinauyeung.nyuma.c9.core.shizuku.ShizukuConnection
-import com.austinauyeung.nyuma.c9.core.shizuku.ShizukuStatus
 import com.austinauyeung.nyuma.c9.cursor.domain.ControlScheme
 import com.austinauyeung.nyuma.c9.settings.domain.OverlaySettings
 import kotlinx.coroutines.Dispatchers
@@ -125,20 +123,6 @@ fun SettingsScreen(
                     context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                 },
             )
-
-            if (uiState.enableShizukuIntegration) {
-                val shizukuStatus = ShizukuConnection.statusFlow.collectAsState().value
-                PermissionStatusBanner(
-                    title = "Shizuku Service",
-                    status = shizukuStatus == ShizukuStatus.READY,
-                    onClickAction = {
-                        when (shizukuStatus) {
-                            ShizukuStatus.PERMISSION_REQUIRED -> ShizukuConnection.requestPermission()
-                            else -> {}
-                        }
-                    }
-                )
-            }
 
             PreferenceCategory(title = "Input Modes") {
                 SimplePreferenceItem(
