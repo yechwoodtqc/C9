@@ -281,7 +281,6 @@ class SettingsState(
         updateSettings { it.copy(disableTouchscreen = disable) }
     }
 
-    }
 
     class Factory(
         private val settingsRepository: SettingsRepository,
