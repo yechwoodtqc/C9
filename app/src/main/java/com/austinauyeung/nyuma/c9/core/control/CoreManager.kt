@@ -12,8 +12,8 @@ import com.austinauyeung.nyuma.c9.core.notification.NotificationManager
 import com.austinauyeung.nyuma.c9.cursor.control.CursorActionHandler
 import com.austinauyeung.nyuma.c9.cursor.control.CursorStateManager
 import com.austinauyeung.nyuma.c9.gesture.api.GestureManager
-import com.austinauyeung.nyuma.c9.gesture.shizuku.ShizukuGestureStrategy
 import com.austinauyeung.nyuma.c9.gesture.standard.DefaultGestureStrategy
+import com.austinauyeung.nyuma.c9.gesture.standard.AccessibilityClickStrategy
 import com.austinauyeung.nyuma.c9.gesture.ui.GesturePath
 import com.austinauyeung.nyuma.c9.grid.control.GridActionHandler
 import com.austinauyeung.nyuma.c9.grid.control.GridStateManager
@@ -91,23 +91,16 @@ class CoreManager(
             modeCoordinator = ModeCoordinator()
             notificationManager = NotificationManager(service)
 
-            val shizukuStrategy = ShizukuGestureStrategy(
-                settingsFlow = settingsFlow
-            )
-            // dispatchGesture and GestureDescription are available only on API 24+.
-            // On Android 6, avoid constructing the standard strategy and use the
-            // Shizuku injector when authorized; its methods safely report failure
-            // when Shizuku is unavailable instead of calling an unsupported API.
-            val defaultStrategy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Android 6 lacks dispatchGesture, so use accessible node actions only.
+            // Android 7+ uses the native AccessibilityService gesture API.
+            val gestureStrategy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 DefaultGestureStrategy(service, settingsFlow)
             } else {
-                shizukuStrategy
+                AccessibilityClickStrategy(service)
             }
-            C9.getInstance().setShizukuGestureStrategy(shizukuStrategy)
 
             gestureManager = GestureManager(
-                defaultStrategy,
-                shizukuStrategy,
+                gestureStrategy,
                 settingsFlow,
                 screenDimensionsFlow,
                 backgroundScope
