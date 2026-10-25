@@ -18,8 +18,7 @@ import com.austinauyeung.nyuma.c9.gesture.api.GestureStrategy
 class AccessibilityClickStrategy(
     private val service: AccessibilityService
 ) : GestureStrategy {
-    private var pendingTapX = 0f
-    private var pendingTapY = 0f
+    private var tapPending = false
 
     private fun contains(node: AccessibilityNodeInfo, x: Float, y: Float): Boolean {
         val bounds = Rect()
@@ -97,8 +96,7 @@ class AccessibilityClickStrategy(
         y: Float,
         completionListener: GestureCompletionListener?
     ): Boolean {
-        pendingTapX = x
-        pendingTapY = y
+        tapPending = true
         completionListener?.onGestureCompleted(true)
         return true
     }
@@ -108,6 +106,8 @@ class AccessibilityClickStrategy(
         finalY: Float,
         completionListener: GestureCompletionListener?
     ): Boolean {
+        if (!tapPending) return false
+        tapPending = false
         val success = clickAt(finalX, finalY)
         completionListener?.onGestureCompleted(success)
         return success
@@ -120,12 +120,14 @@ class AccessibilityClickStrategy(
         toY: Float,
         completionListener: GestureCompletionListener?
     ): Boolean {
+        tapPending = false
         Logger.w("Drag is not supported by the Android 6 accessibility-only strategy")
         completionListener?.onGestureCompleted(false)
         return false
     }
 
     override fun cancelTap(completionListener: GestureCompletionListener?): Boolean {
+        tapPending = false
         completionListener?.onGestureCompleted(true)
         return true
     }
