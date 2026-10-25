@@ -42,7 +42,6 @@ data class OverlaySettings(
     val zoomDuration: Long = Defaults.Settings.ZOOM_DURATION,
     val zoomFactor: Float = Defaults.Settings.ZOOM_FACTOR,
     val allowPassthrough: Boolean = Defaults.Settings.ALLOW_PASSTHROUGH,
-    val overrideAndroid7: Boolean = Defaults.Settings.OVERRIDE_ANDROID_7,
     val hideOnKeyboardOpen: Boolean = Defaults.Settings.HIDE_ON_KEYBOARD_OPEN,
     val hideOnLauncherOpen: Boolean = Defaults.Settings.HIDE_ON_LAUNCHER_OPEN,
     val hideOnLockScreen: Boolean = Defaults.Settings.HIDE_ON_LOCK_SCREEN,
