@@ -23,7 +23,7 @@ import kotlin.math.abs
 import kotlin.math.pow
 
 /**
- * Translates inputs from either cursor mode into gestures, using Shizuku if necessary.
+ * Translates cursor inputs into gestures using the platform-supported strategy.
  */
 class GestureManager(
     private val strategy: GestureStrategy,
@@ -198,7 +198,7 @@ class GestureManager(
                 }
             }
 
-            return if (!portrait) currentStrategy.performZoom(
+            return if (!portrait) strategy.performZoom(
                 isZoomIn,
                 startX1, startY,
                 startX2, startY,
