@@ -359,18 +359,26 @@ class ShizukuGestureStrategy(
 
         try {
             val downTime = SystemClock.uptimeMillis()
+            val downEvent = createMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, x, y)
+            val result = try {
+                injectEvent(downEvent)
+            } finally {
+                downEvent.recycle()
+            }
+
+            if (!result) {
+                Logger.e("Shizuku failed to inject tap-down event")
+                _gestureActive = false
+                _gestureDownTime = 0L
+                completionListener?.onGestureCompleted(false)
+                return false
+            }
+
             _gestureDownTime = downTime
             _gestureActive = true
-
-            val downEvent = createMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, x, y)
-            val result = injectEvent(downEvent)
-            downEvent.recycle()
-
             _currentGestureX = x
             _currentGestureY = y
-
             completionListener?.onGestureCompleted(true)
-
             return true
         } catch (e: Exception) {
             Logger.e("Error starting gesture via Shizuku", e)
